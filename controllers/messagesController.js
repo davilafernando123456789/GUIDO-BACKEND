@@ -46,8 +46,7 @@ exports.getMensajesPorDestinatario = async (req, res) => {
   }
 };
 
-
-const deleteMensajeById = async (req, res) => {
+exports.deleteMensajeById = async (req, res) => {
   const { messageId } = req.params;
 
   try {
@@ -70,8 +69,28 @@ const deleteMensajeById = async (req, res) => {
     res.status(500).json({ error: "Error al eliminar el mensaje." });
   }
 };
+exports.updateMensajeById = async (req, res) => {
+  const { messageId } = req.params;
+  const { contenido, remite_id, destinatario_id } = req.body;
 
-const getMensajesPorRemitente = async (req, res) => {
+  try {
+    // Buscar el mensaje por su ID
+    const mensaje = await Mensaje.findByPk(messageId);
+    if (!mensaje) {
+      return res.status(404).json({ error: "Mensaje no encontrado." });
+    }
+
+    // Actualizar los campos del mensaje
+    await mensaje.update({ contenido, remite_id, destinatario_id });
+
+    res.json({ message: "Mensaje actualizado correctamente." });
+  } catch (error) {
+    console.error('Error al actualizar el mensaje:', error);
+    res.status(500).json({ error: "Error al actualizar el mensaje." });
+  }
+};
+
+exports.getMensajesPorRemitente = async (req, res) => {
   try {
     const { remite_id } = req.params;
     const mensajes = await Mensaje.findAll({ where: { remite_id } });

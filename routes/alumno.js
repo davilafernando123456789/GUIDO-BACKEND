@@ -7,11 +7,12 @@ const alumnoController = require('../controllers/alumnoController');
 
 // Rutas para Alumnos
 router.get('/', alumnoController.getAllAlumnos);
+router.get('/nombre/:nombre', alumnoController.getAlumnoByNombre); 
 router.get('/:id', alumnoController.getAlumnoById);
 router.post('/', alumnoController.createAlumno);
-router.put('/:id', alumnoController.updateAlumnoById);
+router.put('/editar/:id', alumnoController.updateAlumnoById);
 router.delete('/:id', alumnoController.deleteAlumnoById);
-router.get('/nombre/:nombre', alumnoController.getAlumnoByNombre); 
+
 
 
 module.exports = router;

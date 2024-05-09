@@ -47,7 +47,6 @@ exports.createAlumno = async (req, res) => {
     res.status(500).json({ message: 'Hubo un error al crear el alumno' });
   }
 };
-// Método para eliminar un alumno por su ID
 exports.deleteAlumnoById = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -59,6 +58,9 @@ exports.deleteAlumnoById = async (req, res) => {
     if (!alumno) {
       return res.status(404).json({ message: 'Alumno no encontrado' });
     }
+
+    // Actualizar el ID del apoderado del alumno a null
+    await alumno.update({ Apoderado_id: null }, { transaction: t });
 
     // Eliminar la dirección del apoderado
     await Direccion.destroy({ where: { id: alumno.apoderado.Direccion_id } }, { transaction: t });
@@ -80,6 +82,7 @@ exports.deleteAlumnoById = async (req, res) => {
     res.status(500).json({ message: 'Hubo un error al eliminar el alumno' });
   }
 };
+
 
 ///Método para obtener un alumno por su ID
 exports.getAlumnoById = async (req, res) => {

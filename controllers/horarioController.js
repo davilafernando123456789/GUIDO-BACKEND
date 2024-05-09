@@ -202,6 +202,43 @@ const getHorariosByFecha = async (req, res) => {
   }
 };
 
+const updateHorarioById = async (req, res) => {
+  const { horarioId } = req.params;
+  const { titulo, dia_semana, hora_inicio, hora_fin, fecha, duracion, Profesores_id } = req.body;
+
+  try {
+    // Buscar el horario por su ID
+    const horario = await Horario.findByPk(horarioId);
+    if (!horario) {
+      return res.status(404).json({ error: "Horario no encontrado." });
+    }
+
+    // Verificar si se proporcionó un Profesores_id válido
+    if (Profesores_id) {
+      // Verificar si el Profesores_id existe
+      const profesor = await Profesor.findByPk(Profesores_id);
+      if (!profesor) {
+        return res.status(404).json({ error: "El profesor no existe" });
+      }
+    }
+
+    // Actualizar el horario con los nuevos valores
+    await horario.update({
+      titulo,
+      dia_semana,
+      hora_inicio,
+      hora_fin,
+      fecha,
+      duracion,
+      Profesores_id
+    });
+
+    res.json({ message: "Horario actualizado correctamente." });
+  } catch (error) {
+    console.error('Error al actualizar el horario:', error);
+    res.status(500).json({ error: "Error al actualizar el horario." });
+  }
+};
 
 module.exports = {
   getAllHorarios,
@@ -211,5 +248,6 @@ module.exports = {
   getHorarioById,
   getHorariosByIds,
   deleteHorarioById,
-  getHorariosByFecha
+  getHorariosByFecha,
+  updateHorarioById // Agregamos el nuevo método de actualización
 };

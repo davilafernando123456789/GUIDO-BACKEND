@@ -9,7 +9,6 @@ const antecedentesEducativosRoutes = require("./routes/antecedentesEducativos");
 const inscripcionesRoutes = require("./routes/inscripciones");
 const administradorRoutes = require("./routes/administrador");
 const usuariosRoutes = require("./routes/usuario");
-const cursosRoutes = require("./routes/cursos");
 const imagenRoutes = require("./routes/imagen");
 const messagesRoutes = require("./routes/messages");
 const multer = require("multer");
@@ -21,10 +20,12 @@ const socketIo = require("socket.io");
 const Mensaje = require("./models/Messages");
 const sequelize = require("./config/db");
 const aws = require("aws-sdk");
+const twilio = require('twilio');
+const bodyParser = require('body-parser');
 
 // AWS S3 Configuration
 const s3 = new aws.S3({
-//CLAVES AQUI
+//claves aqui
 });
 
 const server = http.createServer(app);
@@ -188,6 +189,7 @@ io.on("connection", async (socket) => {
     console.log("Usuario desconectado");
   });
 });
+
 app.use("/api/profesores", require("./routes/profesor"));
 app.use("/api/alumnos", require("./routes/alumno"));
 app.use("/api/apoderados", require("./routes/apoderado"));
@@ -197,7 +199,6 @@ app.use("/api/antecedentes_penales", antecedentesEducativosRoutes);
 app.use("/api/reuniones", reunionesRoutes);
 app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/inscripciones", inscripcionesRoutes);
-app.use("/api/cursos", cursosRoutes);
 app.use("/api/mensajes", messagesRoutes);
 app.use("/api/administrador", administradorRoutes);
 app.use(upload.single("image"));

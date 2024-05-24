@@ -2,7 +2,7 @@
 const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
 const Educativos = require('./AntecedentesEducativo');
-const MeetingRoom = require('./MeetingRoom');
+// const MeetingRoom = require('./MeetingRoom');
 
 const Profesores = sequelize.define('Profesores', {
   id: {
@@ -92,6 +92,6 @@ const Profesores = sequelize.define('Profesores', {
 });
 
 Profesores.belongsTo(Educativos, { foreignKey: 'id', as: 'Educativos' });
-Profesores.hasMany(MeetingRoom, { foreignKey: 'idProfesor' });
+// Profesores.hasMany(MeetingRoom, { foreignKey: 'idProfesor' });
 
 module.exports = Profesores;

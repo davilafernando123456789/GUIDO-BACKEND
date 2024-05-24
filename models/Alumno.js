@@ -53,7 +53,7 @@ const Alumno = sequelize.define('Alumno', {
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
-    defaultValue: DataTypes.NOW, // Puedes ajustar el valor predeterminado según tus necesidades
+    defaultValue: DataTypes.NOW, 
   },
   updatedAt: {
     type: DataTypes.DATE,

@@ -27,9 +27,31 @@ exports.getInscripcionById = async (req, res) => {
   }
 };
 
+// // Crear una nueva inscripción
+// exports.createInscripcion = async (req, res) => {
+//   try {
+//     const inscripcion = await Inscripciones.create(req.body);
+//     res.status(201).json(inscripcion);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: 'Error al crear la inscripción' });
+//   }
+// };
 // Crear una nueva inscripción
 exports.createInscripcion = async (req, res) => {
+  const { Alumnos_id, Profesores_id, Horario_id } = req.body;
+
   try {
+    // Verificar si ya existe una inscripción con el mismo Horario_id
+    const inscripcionExistente = await Inscripciones.findOne({
+      where: { Horario_id, Alumnos_id }
+    });
+
+    if (inscripcionExistente) {
+      return res.status(400).json({ message: 'Ya existe una inscripción para este horario' });
+    }
+
+    // Crear la nueva inscripción si no existe una duplicada
     const inscripcion = await Inscripciones.create(req.body);
     res.status(201).json(inscripcion);
   } catch (error) {

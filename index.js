@@ -237,7 +237,12 @@ const sequelize = require("./config/db");
 
 // AWS S3 Configuration
 const s3 = new aws.S3({
+<<<<<<< HEAD
     //claves aqui
+=======
+
+
+>>>>>>> a8de2b3a10196bc6ed454cea0b1c351f1ed8a7a9
 });
 
 const app = express();

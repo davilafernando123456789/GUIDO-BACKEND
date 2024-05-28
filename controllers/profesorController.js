@@ -6,6 +6,90 @@ const jwt = require("jsonwebtoken");
 
 // const sequelize = require('../config/db');
 const Sequelize = sequelize.Sequelize;
+// exports.createProfesor = async (req, res) => {
+//   const t = await sequelize.transaction();
+//   try {
+//     const {
+//       email,
+//       usuario,
+//       password,
+//       nombre,
+//       apellido,
+//       dni,
+//       genero,
+//       telefono,
+//       fecha_nac,
+//       especialidad, // Recibido como una cadena separada por comas
+//       descripcion,
+//       foto,
+//       Roles_id,
+//       direccion,
+//       educativos,
+//     } = req.body;
+
+//     // Crear la dirección
+//     const newDireccion = await Direccion.create(direccion, { transaction: t });
+
+//     // Crear el antecedente educativo
+//     const newAntecedenteEducativo = await Educativos.create(educativos, {
+//       transaction: t,
+//     });
+
+//     // Crear el enlace de la sala de reuniones
+//     const meetingRoomLink =
+//       "https://meet.jit.si/ProfesorClassroom" + nombre + apellido;
+
+//     // Crear el profesor
+//     const newProfesor = await Profesores.create(
+//       {
+//         email,
+//         usuario,
+//         password,
+//         nombre,
+//         apellido,
+//         genero,
+//         dni,
+//         sala: meetingRoomLink,
+//         especialidad, // Guardar la cadena tal como viene del frontend
+//         descripcion,
+//         foto,
+//         telefono,
+//         fecha_nac,
+//         Roles_id,
+//         Direccion_id: newDireccion.id,
+//         Antecedentes_educativos_id: newAntecedenteEducativo.id,
+//       },
+//       { transaction: t }
+//     );
+
+//     // Crear token para profesores
+//     const token = jwt.sign({ id: newProfesor.id, rol: 2 }, "secreto", {
+//       expiresIn: "1h",
+//     });
+
+//     // Confirmar la transacción
+//     await t.commit();
+
+//     res.status(200).json({
+//       mensaje: "OK",
+//       rol: 2,
+//       usuario: {
+//         id: newProfesor.id,
+//         email: newProfesor.email,
+//         nombre: newProfesor.nombre,
+//         // Agrega otros campos del profesor que desees devolver
+//       },
+//       token,
+//     });
+//   } catch (error) {
+//     // Revertir la transacción en caso de error
+//     await t.rollback();
+//     console.error(error);
+//     res
+//       .status(500)
+//       .json({ success: false, message: "Hubo un error al crear el profesor" });
+//   }
+// };
 exports.createProfesor = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -77,7 +161,15 @@ exports.createProfesor = async (req, res) => {
         id: newProfesor.id,
         email: newProfesor.email,
         nombre: newProfesor.nombre,
-        // Agrega otros campos del profesor que desees devolver
+        apellido: newProfesor.apellido,
+        genero: newProfesor.genero,
+        dni: newProfesor.dni,
+        telefono: newProfesor.telefono,
+        fecha_nac: newProfesor.fecha_nac,
+        especialidad: newProfesor.especialidad,
+        descripcion: newProfesor.descripcion,
+        foto: newProfesor.foto,
+        sala: newProfesor.sala,
       },
       token,
     });

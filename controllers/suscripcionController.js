@@ -7,58 +7,145 @@ const Apoderado = require("../models/Apoderado");
 const Direccion = require("../models/Direccion");
 const { Op } = require("sequelize");
 
+
 exports.guardarSuscripcion = async (req, res) => {
-    const t = await sequelize.transaction();
-    try {
-      const { usuarioId, rol, tipo_suscripcion } = req.body;
-  console.log(usuarioId, rol, tipo_suscripcion)
-      // Calcular las fechas de inicio y fin de la suscripción
-      const fecha_inicio = new Date();
-      let fecha_fin;
-      switch (tipo_suscripcion) {
-        case "Mensual":
-          fecha_fin = new Date(fecha_inicio);
-          fecha_fin.setMonth(fecha_fin.getMonth() + 1);
-          break;
-        case "Trimestral":
-          fecha_fin = new Date(fecha_inicio);
-          fecha_fin.setMonth(fecha_fin.getMonth() + 3);
-          break;
-        case "Anual":
-          fecha_fin = new Date(fecha_inicio);
-          fecha_fin.setFullYear(fecha_fin.getFullYear() + 1);
-          break;
-        default:
-          throw new Error("Tipo de suscripción no válido");
-      }
-  
-      // Crear la nueva suscripción
-      const nuevaSuscripcion = await Suscripcion.create(
-        {
-          tipo_suscripcion,
-          fecha_inicio,
-          fecha_fin,
-        },
-        { transaction: t }
-      );
-  
-      // Asociar la suscripción al usuario correspondiente (alumno o profesor)
-      const Modelo = rol === '1' ? Alumno : Profesor;
-      await Modelo.update(
+  const t = await sequelize.transaction();
+  try {
+    const { usuarioId, rol, tipo_suscripcion, payment_id, payment_status, payment_amount, payment_currency } = req.body;
+
+    console.log('Datos recibidos:');
+    console.log('usuarioId:', usuarioId);
+    console.log('rol:', rol);
+    console.log('tipo_suscripcion:', tipo_suscripcion);
+    console.log('payment_id:', payment_id);
+    console.log('payment_status:', payment_status);
+    console.log('payment_amount:', payment_amount);
+    console.log('payment_currency:', payment_currency);
+
+    let usuario;
+    if (rol == 1) {
+      usuario = await Alumno.findByPk(usuarioId);
+    } else if (rol == 2) {
+      usuario = await Profesor.findByPk(usuarioId);
+    } else {
+      throw new Error("Rol no válido");
+    }
+
+    if (!usuario) {
+      throw new Error("El usuario no existe");
+    }
+
+    // Calcular las fechas de inicio y fin de la suscripción
+    const fecha_inicio = new Date();
+    let fecha_fin;
+    switch (tipo_suscripcion) {
+      case "Mensual":
+        fecha_fin = new Date(fecha_inicio);
+        fecha_fin.setMonth(fecha_fin.getMonth() + 1);
+        break;
+      case "Trimestral":
+        fecha_fin = new Date(fecha_inicio);
+        fecha_fin.setMonth(fecha_fin.getMonth() + 3);
+        break;
+      case "Anual":
+        fecha_fin = new Date(fecha_inicio);
+        fecha_fin.setFullYear(fecha_fin.getFullYear() + 1);
+        break;
+      default:
+        throw new Error("Tipo de suscripción no válido");
+    }
+
+    // Crear la nueva suscripción
+    const nuevaSuscripcion = await Suscripcion.create(
+      {
+        usuario_id: usuarioId,
+        rol,
+        tipo_suscripcion,
+        fecha_inicio,
+        fecha_fin,
+        payment_id,
+        payment_status,
+        payment_amount,
+        payment_currency
+      },
+      { transaction: t }
+    );
+
+    // Asociar la suscripción al usuario correspondiente (alumno o profesor)
+    if (rol == 1) {
+      await Alumno.update(
         { Suscripcion_id: nuevaSuscripcion.id },
         { where: { id: usuarioId }, transaction: t }
       );
-  
-      // Commit la transacción
-      await t.commit();
-      res.status(201).json(nuevaSuscripcion);
-    } catch (error) {
-      // Rollback si hay un error
-      await t.rollback();
-      console.error(error);
-      res.status(500).json({ message: "Hubo un error al guardar la suscripción" });
+    } else if (rol == 2) {
+      await Profesor.update(
+        { Suscripcion_id: nuevaSuscripcion.id },
+        { where: { id: usuarioId }, transaction: t }
+      );
     }
-  };
+
+    // Commit la transacción
+    await t.commit();
+    res.status(201).json(nuevaSuscripcion);
+  } catch (error) {
+    // Rollback si hay un error
+    await t.rollback();
+    console.error(error);
+    res.status(500).json({ message: "Hubo un error al guardar la suscripción" });
+  }
+};
+// exports.guardarSuscripcion = async (req, res) => {
+//     const t = await sequelize.transaction();
+//     try {
+//       const { usuarioId, rol, tipo_suscripcion } = req.body;
+//   console.log(usuarioId, rol, tipo_suscripcion)
+//       // Calcular las fechas de inicio y fin de la suscripción
+//       const fecha_inicio = new Date();
+//       let fecha_fin;
+//       switch (tipo_suscripcion) {
+//         case "Mensual":
+//           fecha_fin = new Date(fecha_inicio);
+//           fecha_fin.setMonth(fecha_fin.getMonth() + 1);
+//           break;
+//         case "Trimestral":
+//           fecha_fin = new Date(fecha_inicio);
+//           fecha_fin.setMonth(fecha_fin.getMonth() + 3);
+//           break;
+//         case "Anual":
+//           fecha_fin = new Date(fecha_inicio);
+//           fecha_fin.setFullYear(fecha_fin.getFullYear() + 1);
+//           break;
+//         default:
+//           throw new Error("Tipo de suscripción no válido");
+//       }
+  
+//       // Crear la nueva suscripción
+//       const nuevaSuscripcion = await Suscripcion.create(
+//         {
+//           tipo_suscripcion,
+//           fecha_inicio,
+//           fecha_fin,
+//         },
+//         { transaction: t }
+//       );
+  
+//       // Asociar la suscripción al usuario correspondiente (alumno o profesor)
+//       const Modelo = rol === '1' ? Alumno : Profesor;
+//       await Modelo.update(
+//         { Suscripcion_id: nuevaSuscripcion.id },
+//         { where: { id: usuarioId }, transaction: t }
+//       );
+  
+//       // Commit la transacción
+//       await t.commit();
+//       res.status(201).json(nuevaSuscripcion);
+//     } catch (error) {
+//       // Rollback si hay un error
+//       await t.rollback();
+//       console.error(error);
+//       res.status(500).json({ message: "Hubo un error al guardar la suscripción" });
+//     }
+//   };
 
 exports.verificarSuscripcion = async (req, res) => {
     try {

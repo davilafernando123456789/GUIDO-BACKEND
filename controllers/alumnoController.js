@@ -7,7 +7,46 @@ const Apoderado = require('../models/Apoderado');
 const Direccion = require('../models/Direccion');
 const { Op } = require('sequelize');
 
+const jwt = require("jsonwebtoken");
+// exports.createAlumno = async (req, res) => {
+//   const t = await sequelize.transaction();
+//   try {
+//     const { email, usuario, password, nombre, apellido, genero, telefono, fecha_nac, Roles_id, direccion, apoderado } = req.body;
 
+//     // Crear la dirección
+//     const newDireccion = await Direccion.create(direccion, { transaction: t });
+
+//     // Asignar la dirección al apoderado
+//     apoderado.Direccion_id = newDireccion.id;
+
+//     // Crear el apoderado
+//     const newApoderado = await Apoderado.create(apoderado, { transaction: t });
+
+//     // Crear el alumno
+//     const newAlumno = await Alumno.create({
+//       email,
+//       usuario,
+//       password,
+//       nombre,
+//       apellido,
+//       genero,
+//       telefono,
+//       fecha_nac,
+//       Roles_id,
+//       Apoderado_id: newApoderado.id
+//     }, { transaction: t });
+
+//     // Commit la transacción
+//     await t.commit();
+
+//     res.json(newAlumno);
+//   } catch (error) {
+//     // Rollback si hay un error
+//     await t.rollback();
+//     console.error(error);
+//     res.status(500).json({ message: 'Hubo un error al crear el alumno' });
+//   }
+// };
 exports.createAlumno = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -36,10 +75,28 @@ exports.createAlumno = async (req, res) => {
       Apoderado_id: newApoderado.id
     }, { transaction: t });
 
+    // Crear token para alumnos
+    const token = jwt.sign({ id: newAlumno.id, rol: 1 }, 'secreto', { expiresIn: '1h' });
+
     // Commit la transacción
     await t.commit();
 
-    res.json(newAlumno);
+    res.status(200).json({
+      mensaje: "OK",
+      rol: 1,
+      usuario: {
+        id: newAlumno.id,
+        email: newAlumno.email,
+        nombre: newAlumno.nombre,
+        apellido: newAlumno.apellido,
+        genero: newAlumno.genero,
+        telefono: newAlumno.telefono,
+        fecha_nac: newAlumno.fecha_nac,
+        direccion: newDireccion,
+        apoderado: newApoderado,
+      },
+      token,
+    });
   } catch (error) {
     // Rollback si hay un error
     await t.rollback();

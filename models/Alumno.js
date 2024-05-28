@@ -3,6 +3,7 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
 const Apoderado = require('./Apoderado');
 const Inscripcion = require('./Inscripciones');
+const Suscripcion = require('./Suscripcion');
 const Alumno = sequelize.define('Alumno', {
   id: {
     type: DataTypes.INTEGER,
@@ -50,6 +51,10 @@ const Alumno = sequelize.define('Alumno', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  Suscripcion_id: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,
@@ -64,5 +69,5 @@ const Alumno = sequelize.define('Alumno', {
 
 Alumno.belongsTo(Apoderado, { foreignKey: 'Apoderado_id', as: 'apoderado' });
 
-
+Alumno.belongsTo(Suscripcion, { foreignKey: 'Suscripcion_id', as: 'suscripcion' });
 module.exports = Alumno;

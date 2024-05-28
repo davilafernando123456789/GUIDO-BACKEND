@@ -13,6 +13,4 @@ router.post('/', alumnoController.createAlumno);
 router.put('/editar/:id', alumnoController.updateAlumnoById);
 router.delete('/:id', alumnoController.deleteAlumnoById);
 
-
-
 module.exports = router;

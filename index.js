@@ -11,6 +11,7 @@ const administradorRoutes = require("./routes/administrador");
 const usuariosRoutes = require("./routes/usuario");
 const imagenRoutes = require("./routes/imagen");
 const messagesRoutes = require("./routes/messages");
+const suscripcionRoutes = require("./routes/suscripcion");
 const multer = require("multer");
 const upload = multer();
 const app = express();
@@ -201,6 +202,7 @@ app.use("/api/usuarios", usuariosRoutes);
 app.use("/api/inscripciones", inscripcionesRoutes);
 app.use("/api/mensajes", messagesRoutes);
 app.use("/api/administrador", administradorRoutes);
+app.use("/api/suscripcion", suscripcionRoutes);
 app.use(upload.single("image"));
 app.use("/api/imagen", imagenRoutes);
 // Iniciar el servidor

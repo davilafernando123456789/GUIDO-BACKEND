@@ -1,11 +1,11 @@
 // // controllers/alumnosController.js
-// const Alumnos = require('../models/Alumno');
-// const Apoderado = require('../models/Apoderado');
+const Suscripcion = require('../models/Suscripcion');
 const sequelize = require('../config/db');
 
 const Alumno = require('../models/Alumno');
 const Apoderado = require('../models/Apoderado');
 const Direccion = require('../models/Direccion');
+const { Op } = require('sequelize');
 
 
 exports.createAlumno = async (req, res) => {

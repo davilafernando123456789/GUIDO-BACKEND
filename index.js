@@ -26,7 +26,8 @@ const bodyParser = require('body-parser');
 
 // AWS S3 Configuration
 const s3 = new aws.S3({
-//claves aqui
+
+
 });
 
 const server = http.createServer(app);

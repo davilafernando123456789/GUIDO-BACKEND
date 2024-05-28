@@ -25,11 +25,11 @@ const Profesores = sequelize.define('Profesores', {
   },
   nombre: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   apellido: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   fecha_nac: {
     type: DataTypes.STRING,
@@ -41,7 +41,7 @@ const Profesores = sequelize.define('Profesores', {
   },
   especialidad: {
     type: DataTypes.STRING,
-    allowNull: true,
+    allowNull: false,
   },
   descripcion: {
     type: DataTypes.STRING,

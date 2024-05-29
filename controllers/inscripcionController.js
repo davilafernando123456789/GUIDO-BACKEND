@@ -1,10 +1,36 @@
 const Inscripciones = require("../models/Inscripciones");
 const ProfesorPayPalAccount = require("../models/ProfesorPayPalAccounts");
 const Suscripcion = require("../models/Suscripcion");
-const Profesor = require("../models/Profesor");
+const Profesores = require("../models/Profesor");
 const Alumno = require("../models/Alumno");
 const sequelize = require("../config/db");
 
+
+exports.obtenerProfesoresPorAlumnoId = async (req, res) => {
+  try {
+    const { alumnoId } = req.params;
+
+    const inscripciones = await Inscripciones.findAll({
+      where: {
+        Alumnos_id: alumnoId
+      },
+      include: [
+        {
+          model: Profesores,
+          as: 'Profesor', // Especificar el alias de la asociación
+          attributes: ['id', 'nombre', 'apellido', 'especialidad']
+        }
+      ]
+    });
+
+    const profesores = inscripciones.map(inscripcion => inscripcion.Profesor);
+
+    res.status(200).json(profesores);
+  } catch (error) {
+    console.error('Error al obtener profesores por alumno ID:', error);
+    res.status(400).json({ error: error.message });
+  }
+};
 
 // Crear una nueva inscripción
 exports.createInscripcion = async (req, res) => {

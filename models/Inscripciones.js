@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Profesores = require('./Profesor');
 
 const Inscripciones = sequelize.define('Inscripciones', {
   id: {
@@ -31,5 +32,5 @@ const Inscripciones = sequelize.define('Inscripciones', {
     onUpdate: DataTypes.NOW,
   },
 });
-
+Inscripciones.belongsTo(Profesores, { foreignKey: 'Profesores_id', as: 'Profesor' });
 module.exports = Inscripciones;

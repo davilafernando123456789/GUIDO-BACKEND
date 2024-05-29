@@ -5,6 +5,7 @@ const inscripcionController = require('../controllers/inscripcionController');
 // Rutas para Inscripciones
 router.get('/', inscripcionController.getAllInscripciones);
 router.get('/:id', inscripcionController.getInscripcionById);
+router.get('/alumno/:alumnoId/profesores', inscripcionController.obtenerProfesoresPorAlumnoId);
 router.post('/', inscripcionController.createInscripcion);
 router.put('/editar/:id', inscripcionController.updateInscripcion);
 router.delete('/:id', inscripcionController.deleteInscripcion);

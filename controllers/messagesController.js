@@ -24,6 +24,8 @@ exports.crearMensaje = async (req, res) => {
     res.status(500).json({ error: 'No se pudo crear el mensaje.' });
   }
 };
+
+
 exports.getMessages = async (req, res) => {
   try {
     const messages = await Mensaje.findAll();

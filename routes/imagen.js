@@ -6,7 +6,6 @@ const aws = require("aws-sdk");
 // AWS S3 Configuration
 const s3 = new aws.S3({
 
-
 });
 
 // Upload Image Route

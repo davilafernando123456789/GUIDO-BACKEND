@@ -4,53 +4,45 @@ const Horario = require("../models/Horario");
 const Inscripcion = require("../models/Inscripciones");
 const Profesor = require("../models/Profesor");
 const sequelize = require('../config/db');
-// Obtener todos los horarios
-const getAllHorarios = async (req, res) => {
+
+// Obtener horario por su ID
+const getHorarioById = async (req, res) => {
+  const { horarioId } = req.params;
+
   try {
-    const horarios = await Horario.findAll();
+    // Buscar el horario por su ID
+    const horario = await Horario.findByPk(horarioId);
+    if (!horario) {
+      return res.status(404).json({ error: "Horario no encontrado." });
+    }
+
+    res.json(horario);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error al obtener el horario." });
+  }
+};
+// Obtener horarios por sus IDs
+const getHorariosByIds = async (req, res) => {
+  const { ids } = req.query;
+
+  try {
+    const idArray = ids.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+
+    if (idArray.length === 0) {
+      return res.status(400).json({ error: "No se proporcionaron IDs válidos." });
+    }
+
+    const horarios = await Horario.findAll({
+      where: {
+        id: idArray
+      }
+    });
+
     res.json(horarios);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener los horarios." });
-  }
-};
-
-const createHorario = async (req, res) => {
-  try {
-    const { Profesores_id } = req.body;
-
-    // Verificar si se proporcionó un Profesores_id válido
-    if (!Profesores_id) {
-      return res.status(400).json({ error: "Profesores_id es requerido" });
-    }
-
-    // Verificar si el Profesores_id existe
-    const profesor = await Profesor.findByPk(Profesores_id);
-    if (!profesor) {
-      return res.status(404).json({ error: "El profesor no existe" });
-    }
-
-    // Crear nuevos horarios para cada conjunto de datos
-    const nuevosHorarios = await Promise.all(
-      req.body.horarios.map(async (data) => {
-        const { titulo, dia_semana, hora_inicio, hora_fin, fecha, duracion } = data;
-        const nuevoHorario = await Horario.create({
-          titulo,
-          dia_semana,
-          hora_inicio,
-          hora_fin,
-          fecha,
-          duracion,
-          Profesores_id,
-        });
-        return nuevoHorario;
-      })
-    );
-
-    res.status(201).json(nuevosHorarios);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al crear los horarios." });
   }
 };
 
@@ -80,43 +72,84 @@ const getHorariosByProfesorId = async (req, res) => {
   }
 };
 
-// Obtener horario por su ID
-const getHorarioById = async (req, res) => {
-  const { horarioId } = req.params;
+// const getHorariosByIds = async (req, res) => {
+//   const { ids } = req.query; // Accedemos a req.query en lugar de req.body
 
+//   try {
+//     // Convertimos los IDs de string a array
+//     const idArray = ids.split(',').map(id => parseInt(id.trim()));
+
+//     // Obtener los horarios por los IDs proporcionados
+//     const horarios = await Horario.findAll({
+//       where: {
+//         id: idArray // Filtrar por los IDs proporcionados
+//       }
+//     });
+
+//     res.json(horarios);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ error: "Error al obtener los horarios." });
+//   }
+// };
+// Obtener todos los horarios
+const getAllHorarios = async (req, res) => {
   try {
-    // Buscar el horario por su ID
-    const horario = await Horario.findByPk(horarioId);
-    if (!horario) {
-      return res.status(404).json({ error: "Horario no encontrado." });
-    }
-
-    res.json(horario);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Error al obtener el horario." });
-  }
-};
-const getHorariosByIds = async (req, res) => {
-  const { ids } = req.query; // Accedemos a req.query en lugar de req.body
-
-  try {
-    // Convertimos los IDs de string a array
-    const idArray = ids.split(',').map(id => parseInt(id.trim()));
-
-    // Obtener los horarios por los IDs proporcionados
-    const horarios = await Horario.findAll({
-      where: {
-        id: idArray // Filtrar por los IDs proporcionados
-      }
-    });
-
+    const horarios = await Horario.findAll();
     res.json(horarios);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error al obtener los horarios." });
   }
 };
+
+const createHorario = async (req, res) => {
+  try {
+    const { Profesores_id } = req.body;
+    console.log("Request body:", req.body);
+
+    // Verificar si se proporcionó un Profesores_id válido
+    if (!Profesores_id) {
+      console.log("Error: Profesores_id es requerido");
+      return res.status(400).json({ error: "Profesores_id es requerido" });
+    }
+
+    // Verificar si el Profesores_id existe
+    const profesor = await Profesor.findByPk(Profesores_id);
+    if (!profesor) {
+      console.log("Error: El profesor no existe, Profesores_id:", Profesores_id);
+      return res.status(404).json({ error: "El profesor no existe" });
+    }
+
+    // Crear nuevos horarios para cada conjunto de datos
+    const nuevosHorarios = await Promise.all(
+      req.body.horarios.map(async (data) => {
+        const { titulo, dia_semana, hora_inicio, hora_fin, fecha, duracion } = data;
+        console.log("Creating horario with data:", data);
+        const nuevoHorario = await Horario.create({
+          titulo,
+          dia_semana,
+          hora_inicio,
+          hora_fin,
+          fecha,
+          duracion,
+          Profesores_id,
+        });
+        console.log("Nuevo horario creado:", nuevoHorario);
+        return nuevoHorario;
+      })
+    );
+
+    res.status(201).json(nuevosHorarios);
+  } catch (error) {
+    console.error("Error al crear los horarios:", error);
+    res.status(500).json({ error: "Error al crear los horarios." });
+  }
+};
+
+
+
+
 const getHorariosByAlumnoId = async (req, res) => {
   const { alumnoId } = req.params;
 

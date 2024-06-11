@@ -244,7 +244,7 @@ const sequelize = require("./config/db");
 
 // AWS S3 Configuration
 const s3 = new aws.S3({
-
+ 
 });
 
 const app = express();
@@ -344,9 +344,9 @@ io.on("connection", async (socket) => {
 
       if (sent === true) {
         // Mensaje enviado por un alumno
-        usuario_id = remite_id;
+        usuario_id = destinatario_id;
         rol_id = 1; // Rol de alumno
-        const alumno = await Alumno.findByPk(remite_id);
+        const alumno = await Alumno.findByPk(destinatario_id);
         if (alumno) {
           descripcion = `Has recibido un nuevo mensaje de ${alumno.nombre}`;
         } else {
@@ -354,9 +354,9 @@ io.on("connection", async (socket) => {
         }
       } else if (sent === false) {
         // Mensaje enviado por un profesor
-        usuario_id = destinatario_id;
+        usuario_id = remite_id;
         rol_id = 2; // Rol de profesor
-        const profesor = await Profesores.findByPk(destinatario_id);
+        const profesor = await Profesores.findByPk(remite_id);
         if (profesor) {
           descripcion = `Has recibido un nuevo mensaje de ${profesor.nombre}`;
         } else {

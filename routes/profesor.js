@@ -10,5 +10,7 @@ router.get('/buscar', profesorController.getAllProfesoresEspecialidad);
 router.get('/search', profesorController.getAllProfesoresNombre);
 router.put('/editar/:id', profesorController.updateProfesorById);
 router.delete('/:id', profesorController.deleteProfesorById);
+// Nueva ruta para confirmar el registro
+// router.get('/confirmar-registro', profesorController.confirmarRegistro);
 
 module.exports = router;

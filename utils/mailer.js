@@ -13,12 +13,13 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-const sendEmail = (to, subject, html) => {
+const sendEmail = (to, subject, html, attachments) => {
   const mailOptions = {
     from: '"GUIDO" <reportes@guido.com>',
     to,
     subject,
-    html // Cambiamos de text a html para asegurar que se envía como HTML
+    html, // Cambiamos de text a html para asegurar que se envía como HTML
+    attachments
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

@@ -91,6 +91,7 @@ const Profesores = sequelize.define('Profesores', {
     allowNull: false,
     defaultValue: DataTypes.NOW,
   },
+
 }, {
   timestamps: true, 
 });

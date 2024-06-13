@@ -1,6 +1,8 @@
 // models/Recomendaciones.js
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/db');
+const Alumno = require('./Alumno'); 
+
 
 const Recomendaciones = sequelize.define('Recomendaciones', {
   id: {
@@ -27,7 +29,7 @@ const Recomendaciones = sequelize.define('Recomendaciones', {
   timestamps: true,
   tableName: 'Recomendaciones'
 });
-
+Recomendaciones.belongsTo(Alumno, { foreignKey: 'Alumnos_id' });
 module.exports = Recomendaciones;
 
 // const { Model, DataTypes } = require('sequelize');

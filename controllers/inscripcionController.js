@@ -6,6 +6,7 @@ const sequelize = require("../config/db");
 const Alumnos = require("../models/Alumno");
 const Horario = require("../models/Horario");
 
+
 // Crear una nueva inscripción
 exports.createInscripcion = async (req, res) => {
   const { Alumnos_id, Profesores_id, Horario_id } = req.body;
@@ -36,10 +37,18 @@ exports.createInscripcion = async (req, res) => {
     const inscripcion = await Inscripciones.create(req.body);
     console.log('Inscripción creada exitosamente:', inscripcion);
 
+    // Actualizar el campo "titulo" del horario a "Reservado"
+    const horario = await Horario.findByPk(Horario_id);
+    if (horario) {
+      await horario.update({ titulo: 'Reservado' });
+      console.log(`Horario con ID ${Horario_id} actualizado a "Reservado"`);
+    } else {
+      console.log(`Horario con ID ${Horario_id} no encontrado`);
+    }
+
     // Obtener datos adicionales para la notificación
     const profesor = await Profesores.findByPk(Profesores_id);
     const alumno = await Alumnos.findByPk(Alumnos_id);
-    const horario = await Horario.findByPk(Horario_id);
 
     if (profesor && alumno && horario) {
       const descripcion = `El alumno ${alumno.nombre} se registró a tu clase el ${horario.dia_semana} a las ${horario.hora_inicio}`;
@@ -60,6 +69,60 @@ exports.createInscripcion = async (req, res) => {
     res.status(500).json({ message: "Error al crear la inscripción" });
   }
 };
+// // Crear una nueva inscripción
+// exports.createInscripcion = async (req, res) => {
+//   const { Alumnos_id, Profesores_id, Horario_id } = req.body;
+
+//   try {
+//     console.log('Datos recibidos para crear inscripción:', { Alumnos_id, Profesores_id, Horario_id });
+
+//     // Verificar si ya existe una inscripción con el mismo Horario_id
+//     const inscripcionExistente = await Inscripciones.findOne({
+//       where: { Horario_id, Alumnos_id },
+//     });
+
+//     if (inscripcionExistente) {
+//       console.log('Inscripción existente encontrada:', inscripcionExistente);
+//       return res.status(400).json({ message: "Ya existe una inscripción para este horario" });
+//     }
+
+//     const profesorPayPalAccount = await ProfesorPayPalAccount.findOne({
+//       where: { profesor_id: Profesores_id }
+//     });
+
+//     if (!profesorPayPalAccount) {
+//       console.log('No se encontró una cuenta PayPal para el profesor con ID:', Profesores_id);
+//       return res.status(400).json({ message: "No se encontró una cuenta PayPal para este profesor" });
+//     }
+
+//     // Crear la nueva inscripción si no existe una duplicada
+//     const inscripcion = await Inscripciones.create(req.body);
+//     console.log('Inscripción creada exitosamente:', inscripcion);
+
+//     // Obtener datos adicionales para la notificación
+//     const profesor = await Profesores.findByPk(Profesores_id);
+//     const alumno = await Alumnos.findByPk(Alumnos_id);
+//     const horario = await Horario.findByPk(Horario_id);
+
+//     if (profesor && alumno && horario) {
+//       const descripcion = `El alumno ${alumno.nombre} se registró a tu clase el ${horario.dia_semana} a las ${horario.hora_inicio}`;
+//       const notificacion = await Notificacion.create({
+//         usuario_id: Profesores_id,
+//         rol_id: 2,
+//         tipo: 'clase_registrada',
+//         descripcion: descripcion
+//       });
+//       console.log('Notificación creada para el profesor:', notificacion);
+//     } else {
+//       console.log('Datos insuficientes para crear la notificación');
+//     }
+
+//     res.status(201).json(inscripcion);
+//   } catch (error) {
+//     console.error('Error al crear la inscripción:', error);
+//     res.status(500).json({ message: "Error al crear la inscripción" });
+//   }
+// };
 
 
 // // Crear una nueva inscripción

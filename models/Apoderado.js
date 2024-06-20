@@ -40,7 +40,7 @@ const Apoderado = sequelize.define('Apoderado', {
   },
   Direccion_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   createdAt: {
     type: DataTypes.DATE,

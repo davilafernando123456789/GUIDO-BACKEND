@@ -49,7 +49,7 @@ const Alumno = sequelize.define('Alumno', {
   },
   Apoderado_id: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
   Suscripcion_id: {
     type: DataTypes.INTEGER,

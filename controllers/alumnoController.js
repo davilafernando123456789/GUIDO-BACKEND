@@ -159,23 +159,33 @@ exports.deleteAlumnoById = async (req, res) => {
     });
 
     if (!alumno) {
+      await t.rollback();
       return res.status(404).json({ message: "Alumno no encontrado" });
     }
 
-    // Actualizar el ID del apoderado del alumno a null
-    await alumno.update({ Apoderado_id: null }, { transaction: t });
+    // Eliminar la dirección del apoderado si existe
+    if (alumno.apoderado && alumno.apoderado.Direccion_id) {
+      try {
+        await Direccion.destroy(
+          { where: { id: alumno.apoderado.Direccion_id } },
+          { transaction: t }
+        );
+      } catch (error) {
+        console.warn(`No se pudo eliminar la dirección con ID ${alumno.apoderado.Direccion_id}: ${error.message}`);
+      }
+    }
 
-    // Eliminar la dirección del apoderado
-    await Direccion.destroy(
-      { where: { id: alumno.apoderado.Direccion_id } },
-      { transaction: t }
-    );
-
-    // Eliminar el apoderado
-    await Apoderado.destroy(
-      { where: { id: alumno.Apoderado_id } },
-      { transaction: t }
-    );
+    // Eliminar el apoderado si existe
+    if (alumno.Apoderado_id) {
+      try {
+        await Apoderado.destroy(
+          { where: { id: alumno.Apoderado_id } },
+          { transaction: t }
+        );
+      } catch (error) {
+        console.warn(`No se pudo eliminar el apoderado con ID ${alumno.Apoderado_id}: ${error.message}`);
+      }
+    }
 
     // Eliminar el alumno
     await Alumno.destroy({ where: { id } }, { transaction: t });
@@ -191,6 +201,50 @@ exports.deleteAlumnoById = async (req, res) => {
     res.status(500).json({ message: "Hubo un error al eliminar el alumno" });
   }
 };
+
+// exports.deleteAlumnoById = async (req, res) => {
+//   const t = await sequelize.transaction();
+//   try {
+//     const { id } = req.params;
+
+//     // Buscar el alumno por su ID en la base de datos
+//     const alumno = await Alumno.findByPk(id, {
+//       include: [{ model: Apoderado, as: "apoderado" }],
+//     });
+
+//     if (!alumno) {
+//       return res.status(404).json({ message: "Alumno no encontrado" });
+//     }
+
+//     // Actualizar el ID del apoderado del alumno a null
+//     await alumno.update({ Apoderado_id: null }, { transaction: t });
+
+//     // Eliminar la dirección del apoderado
+//     await Direccion.destroy(
+//       { where: { id: alumno.apoderado.Direccion_id } },
+//       { transaction: t }
+//     );
+
+//     // Eliminar el apoderado
+//     await Apoderado.destroy(
+//       { where: { id: alumno.Apoderado_id } },
+//       { transaction: t }
+//     );
+
+//     // Eliminar el alumno
+//     await Alumno.destroy({ where: { id } }, { transaction: t });
+
+//     // Commit la transacción
+//     await t.commit();
+
+//     res.json({ message: "Alumno eliminado correctamente" });
+//   } catch (error) {
+//     // Rollback si hay un error
+//     await t.rollback();
+//     console.error(error);
+//     res.status(500).json({ message: "Hubo un error al eliminar el alumno" });
+//   }
+// };
 
 ///Método para obtener un alumno por su ID
 exports.getAlumnoById = async (req, res) => {

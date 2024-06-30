@@ -8,6 +8,7 @@ const Direccion = require("../models/Direccion");
 const { Op } = require("sequelize");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/mailer");
+const bcrypt = require("bcrypt");
 
 // exports.createAlumno = async (req, res) => {
 //   const t = await sequelize.transaction();
@@ -73,13 +74,15 @@ exports.createAlumno = async (req, res) => {
 
     // Crear el apoderado
     const newApoderado = await Apoderado.create(apoderado, { transaction: t });
-
+    // Encriptar la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log('Hash generado:', hashedPassword);
     // Crear el alumno
     const newAlumno = await Alumno.create(
       {
         email,
         usuario,
-        password,
+        password: hashedPassword,
         nombre,
         apellido,
         genero,
@@ -109,13 +112,15 @@ exports.createAlumno = async (req, res) => {
       </div>
     </div>
   `;
-  
-  sendEmail(email, 'Bienvenido a GUIDO', emailText, [{
-    filename: 'logo.png',
-    path: './images/logo.png',
-    cid: 'logo' // Este ID debe coincidir con el cid en el src de la etiqueta img
-  }]);
-  
+
+    sendEmail(email, "Bienvenido a GUIDO", emailText, [
+      {
+        filename: "logo.png",
+        path: "./images/logo.png",
+        cid: "logo", // Este ID debe coincidir con el cid en el src de la etiqueta img
+      },
+    ]);
+
     // sendEmail(email, "Bienvenido a GUIDO", emailText);
     // Crear token para alumnos
     const token = jwt.sign({ id: newAlumno.id, rol: 1 }, "secreto", {
@@ -171,7 +176,9 @@ exports.deleteAlumnoById = async (req, res) => {
           { transaction: t }
         );
       } catch (error) {
-        console.warn(`No se pudo eliminar la dirección con ID ${alumno.apoderado.Direccion_id}: ${error.message}`);
+        console.warn(
+          `No se pudo eliminar la dirección con ID ${alumno.apoderado.Direccion_id}: ${error.message}`
+        );
       }
     }
 
@@ -183,7 +190,9 @@ exports.deleteAlumnoById = async (req, res) => {
           { transaction: t }
         );
       } catch (error) {
-        console.warn(`No se pudo eliminar el apoderado con ID ${alumno.Apoderado_id}: ${error.message}`);
+        console.warn(
+          `No se pudo eliminar el apoderado con ID ${alumno.Apoderado_id}: ${error.message}`
+        );
       }
     }
 

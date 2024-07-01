@@ -20,16 +20,16 @@ const Direccion = sequelize.define('Direccion', {
   },
   createdAt: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
     defaultValue: DataTypes.NOW, 
   },
   updatedAt: {
     type: DataTypes.DATE,
-    allowNull: false,
+    allowNull: true,
     defaultValue: DataTypes.NOW,
   },
 },  {
-  tableName: 'direccion', // Nombre de la tabla en la base de datos
+  tableName: 'Direccion', // Nombre de la tabla en la base de datos
   timestamps: true
 });
 

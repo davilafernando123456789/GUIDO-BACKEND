@@ -3,7 +3,7 @@ const { DataTypes, Sequelize } = require('sequelize');
 const sequelize = require('../config/db');
 const Educativos = require('./AntecedentesEducativo');
 const Suscripcion = require('./Suscripcion');
-
+const Direccion = require('./Direccion');
 const Profesores = sequelize.define('Profesores', {
   id: {
     type: DataTypes.INTEGER,
@@ -97,6 +97,7 @@ const Profesores = sequelize.define('Profesores', {
 });
 
 Profesores.belongsTo(Educativos, { foreignKey: 'id', as: 'Educativos' });
-// Profesores.hasMany(MeetingRoom, { foreignKey: 'idProfesor' });
 Profesores.belongsTo(Suscripcion, { foreignKey: 'Suscripcion_id', as: 'suscripcion' }); 
+
+
 module.exports = Profesores;
